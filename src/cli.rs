@@ -83,6 +83,13 @@ Please return a JSON object containing the suggested changes in a format similar
 
     command.arg(args.filepath);
 
+    let file = file
+        .lines()
+        .enumerate()
+        .map(|(i, s)| i.to_string() + ":" + s)
+        .collect::<Vec<String>>()
+        .join("\n");
+
     while let Err(e) = run_code(&mut command) {
         let out = chat
             .complete(format!(
@@ -125,8 +132,6 @@ fn edit_files(json: Value) {
         None => return,
     };
 
-    println!("{filepath}");
-
     let file = fs::File::open(filepath).unwrap();
     let mut lines: Vec<String> = io::BufReader::new(file)
         .lines()
@@ -151,6 +156,8 @@ fn edit_files(json: Value) {
             _ => {}
         }
     }
+
+    println!("{lines:#?}");
 
     fs::write(filepath, lines.join("\n")).unwrap();
 }
